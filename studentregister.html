@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard - LAUTECH Final Assessment</title>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #ff5e62, #8f94fb);
+        margin: 0;
+        padding: 0;
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+    }
+
+    header {
+        width: 100%;
+        text-align: center;
+        padding: 20px;
+        background: rgba(0, 0, 0, 0.2);
+        font-size: 1.5rem;
+        font-weight: bold;
+        backdrop-filter: blur(6px);
+    }
+
+    .container1 {
+        margin-top: 40px;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(12px);
+        padding: 40px 30px;
+        border-radius: 20px;
+        width: 350px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        border: 1px solid rgba(255,255,255,0.2);
+        animation: fadeIn 0.8s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    img.logo {
+        width: 80px;
+        height: auto;
+        margin-bottom: 15px;
+    }
+
+    h1 {
+        font-size: 1.4rem;
+        margin-bottom: 20px;
+    }
+
+    input {
+        width: 90%;
+        padding: 12px;
+        margin: 8px 0;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        outline: none;
+        background: rgba(255,255,255,0.9);
+        color: #333;
+    }
+
+    button {
+        background: linear-gradient(90deg, #ff9966, #ff5e62);
+        color: white;
+        border: none;
+        padding: 12px;
+        width: 100%;
+        border-radius: 8px;
+        font-weight: bold;
+        font-size: 1rem;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: 0.3s ease;
+    }
+
+    button:hover {
+        background: linear-gradient(90deg, #ff5e62, #ff9966);
+        transform: translateY(-2px);
+    }
+
+    .link {
+        display: block;
+        margin-top: 15px;
+        font-size: 0.9rem;
+        color: #fff;
+        text-decoration: underline;
+    }
+
+    /* Spinner overlay */
+    #spinner {
+        display: none;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 9999;
+    }
+
+    .loader {
+        border: 6px solid rgba(255,255,255,0.3);
+        border-top: 6px solid #fff;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+</head>
+
+<body>
+<header>Register For Test</header>
+
+<div id="spinner">
+    <div class="loader"></div>
+</div>
+
+<div class="container1">
+    <img src="./LSEI LOGO.png" alt="LAUTECH Logo" class="logo">
+    <h1></h1>
+
+    <form id="registerForm">
+        <input type="text" id="name" name="name" placeholder="Enter Your Full Name" required>
+        <button type="submit">Register For Test</button>
+    </form>
+
+    <a href="index.html" class="link">Back to Home</a>
+</div>
+
+<script>
+document.getElementById("registerForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById("name").value.trim();
+    const spinner = document.getElementById("spinner");
+
+    spinner.style.display = 'flex'; // Show spinner
+
+    try {
+        const res = await fetch("/api/auth/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name })
+        });
+
+        const data = await res.json();
+        spinner.style.display = 'none'; // Hide spinner
+
+        if (res.ok) {
+            Swal.fire({
+                title: "✅ Student Registered Successfully!",
+                html: `<strong>Username:</strong> ${data.username} <br><br>
+                       <strong>Password:</strong> ${data.password}`,
+                icon: "success",
+                confirmButtonColor: "#3498db"
+            });
+            document.getElementById("registerForm").reset();
+        } else {
+            Swal.fire({
+                title: "❌ Registration Failed",
+                text: data.message || "Please try again.",
+                icon: "error",
+                confirmButtonColor: "#e74c3c"
+            });
+        }
+    } catch (error) {
+        spinner.style.display = 'none';
+        Swal.fire({
+            title: "⚠️ Connection Error",
+            text: "Unable to connect to the server.",
+            icon: "warning",
+            confirmButtonColor: "#f1c40f"
+        });
+    }
+});
+</script>
+</body>
+</html>

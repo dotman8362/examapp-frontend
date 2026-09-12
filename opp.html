@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LAUTECH Software Institute - Final Assessment</title>
+<style>
+    /* Global styles */
+    body {
+        margin: 0;
+        font-family: 'Segoe UI', sans-serif;
+        background: linear-gradient(135deg, #1f1c2c, #928DAB);
+        background-size: 400% 400%;
+        animation: gradientBG 12s ease infinite;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        padding: 20px;
+    }
+
+    /* Gradient animation */
+    @keyframes gradientBG {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    /* Main layout container */
+    .main-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 40px;
+        max-width: 1000px;
+        width: 100%;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    /* Container with glass effect */
+    .container {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(12px);
+        padding: 40px;
+        border-radius: 20px;
+        text-align: center;
+        color: #fff;
+        width: 100%;
+        max-width: 400px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+        animation: fadeIn 1.2s ease, float 4s ease-in-out infinite;
+    }
+
+    /* Side image */
+    .side-image {
+        max-width: 400px;
+        width: 100%;
+        border-radius: 15px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+        animation: fadeIn 1.5s ease;
+    }
+
+    /* Fade-in animation */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Floating effect */
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-8px); }
+    }
+
+    /* Logo */
+    img.logo {
+        width: 120px;
+        height: auto;
+        margin-bottom: 15px;
+        filter: drop-shadow(0 0 10px rgba(255,255,255,0.5));
+    }
+
+    /* Gradient title */
+    h1 {
+        font-size: 1.6rem;
+        margin-bottom: 15px;
+        line-height: 1.4;
+        background: linear-gradient(to right, #fff, #c37e34);
+        color: #C37E34;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    /* Subtitle */
+    p {
+        font-size: 1rem;
+        margin-bottom: 15px;
+    }
+
+    /* Warning text */
+    p.warning {
+        color: red;
+        font-size: 1.2rem;
+    }
+
+    /* Button group */
+    .btn-group {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    /* Buttons with glow effect */
+    .btn {
+        display: inline-block;
+        padding: 12px 20px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: bold;
+        background: linear-gradient(to right, #ffffff, #dcdcdc);
+        color: #4e54c8;
+        transition: all 0.3s ease;
+        box-shadow: 0 0 10px rgba(255,255,255,0.3);
+    }
+
+    .btn:hover {
+        background: #C37E34;
+        color: #000;
+        box-shadow: 0 0 20px rgba(255,255,255,0.7);
+        transform: scale(1.05);
+    }
+
+    /* Mobile responsive */
+    @media (max-width: 768px) {
+        .main-wrapper {
+            flex-direction: column;
+            gap: 20px;
+        }
+    }
+</style>
+</head>
+<body>
+
+<div class="main-wrapper">
+    <!-- Left: Glass container -->
+    <div class="container">
+        <img src="./LSEI LOGO.png" alt="LAUTECH Logo" class="logo">
+        <h1>LAUTECH SOFTWARE INSTITUTE<br>IT Student Final Assessment</h1>
+        <p>Test your knowledge</p>
+        <p class="warning">Please note: a username and password will be provided by your instructor</p>
+
+        <div class="btn-group">
+            <a href="./login.html" class="btn">IT Student Login</a>
+            <a href="./adminlogin.html" class="btn">Register Student</a>
+        </div>
+    </div>
+
+    <!-- Right: Side image -->
+    <img src="data:image/png;base64,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" alt="Exam Preparation" class="side-image">
+</div>
+
+</body>
+</html>

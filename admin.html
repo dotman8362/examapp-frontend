@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Student - LAUTECH Software Institute Final Assessment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #4e54c8, #8f94fb);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: #fff;
+        }
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px 30px;
+            border-radius: 15px;
+            width: 350px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        img.logo {
+            width: 80px;
+            height: auto;
+            margin-bottom: 15px;
+        }
+        h1 {
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+        }
+        input {
+            width: 90%;
+            padding: 12px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+        }
+        input[type="text"] {
+            background: #fff;
+            color: #333;
+        }
+        button {
+            background: #fff;
+            color: #4e54c8;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.3s ease;
+        }
+        button:hover {
+            background: #f1f1f1;
+        }
+        .link {
+            display: block;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #fff;
+            text-decoration: underline;
+        }
+        .result-box {
+            background: rgba(255,255,255,0.2);
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.95rem;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Logo -->
+        <img src="./LSEI LOGO.png" alt="LAUTECH Logo" class="logo">
+
+        <h1>Register Student</h1>
+        <form id="registerForm">
+            <input type="text" id="name" name="name" placeholder="Enter Student Full Name" required>
+            <button type="submit">Register</button>
+        </form>
+
+        <!-- Result display -->
+        <div id="result" class="result-box" style="display: none;"></div>
+
+        <a href="index.html" class="link">Back to Home</a>
+    </div>
+
+    <script>
+        document.getElementById("registerForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById("name").value.trim();
+
+            try {
+                const res = await fetch("/api/auth/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    document.getElementById("result").style.display = "block";
+                    document.getElementById("result").innerHTML = `
+                        ✅ Student registered successfully!<br><br><br>
+                        <strong>Username:</strong> ${data.username}<br><br><br>
+                        <strong>Password:</strong> ${data.password}
+                    `;
+                    document.getElementById("registerForm").reset();
+                } else {
+                    alert(data.message || "Registration failed!");
+                }
+            } catch (error) {
+                alert("Error connecting to server");
+            }
+        });
+    </script>
+</body>
+</html>

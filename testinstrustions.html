@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test Instructions</title>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, sans-serif;
+        background: #f5f7fa;
+        color: #333;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        max-width: 900px;
+        margin: 40px auto;
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+        text-align: center;
+        color: #2c3e50;
+        margin-bottom: 10px;
+    }
+
+    h1::before {
+        content: "⏳ ";
+    }
+
+    h2 {
+        color: #2980b9;
+        margin-top: 25px;
+    }
+
+    ul, ol {
+        line-height: 1.6;
+    }
+
+    .highlight {
+        background: #eaf6ff;
+        border-left: 5px solid #3498db;
+        padding: 10px;
+        margin: 15px 0;
+        font-weight: bold;
+    }
+
+    .rules {
+        background: #fff3cd;
+        border-left: 5px solid #ff9800;
+        padding: 10px;
+        margin-top: 20px;
+    }
+
+    .btn-start {
+        display: block;
+        text-align: center;
+        background: #27ae60;
+        color: white;
+        padding: 12px;
+        margin-top: 30px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 18px;
+        transition: background 0.3s ease;
+    }
+
+    .btn-start:hover {
+        background: #219150;
+    }
+    #liveCamera {
+    width: 320px;
+    height: 240px;
+    border: 3px solid #333;
+    border-radius: 8px;
+}
+#startQuizBtn {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: not-allowed;
+    background: gray;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+#startQuizBtn.enabled {
+    cursor: pointer;
+    background: green;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>IT Student Test Instructions</h1>
+    <p>Welcome to the IT Test Portal! Please read these instructions carefully before starting your test.</p>
+
+
+    <h2> Test Details</h2>
+    <div class="highlight">
+        Duration: <strong>50 minutes</strong> – Timer starts once you click “Start Test”.
+    </div>
+    <ul>
+        <li>Multiple Choice Questions (MCQs) – Choose the correct option.</li>
+     
+        <li>Short Answer Questions – Type your answer in the space provided.</li>
+    </ul>
+
+    <h2> During the Test</h2>
+    <ul>
+        <li>You cannot pause or restart once the test begins.</li>
+        <li>Navigate between questions using the <strong>Next</strong> and <strong>Previous</strong> buttons.</li>
+        <li>The system will auto-submit when time runs out.</li>
+        <li>The system will auto-submit when your face is not detected.</li>
+        <li>You may click <strong>Submit Test</strong> at any time before the timer ends.</li>
+    </ul>
+
+    <h2> After the Test</h2>
+    <ul>
+    
+        <li>Log out once finished.</li>
+    </ul>
+
+    <div class="rules">
+        <strong>Important Rules:</strong>
+        <ol>
+            <li>Do not refresh or close the browser during the test.</li>
+            <li>Cheating will lead to disqualification.</li>
+            <li>Ensure a stable internet connection before starting.</li>
+            <li>You can only attempt the quiz once, multiple submissions will be rejected </li>
+            
+        </ol>
+    </div>
+
+      <div id="camera-section">
+        <h2>Camera Verification</h2>
+        <p>Please allow camera access to proceed with the test.</p>
+        <video id="liveCamera" autoplay playsinline></video><br><br>
+        <!-- <button id="startQuizBtn" disabled>Start Quiz</button> -->
+    </div>
+
+    
+
+
+
+
+    <a href="./quiz.html" class="btn-start" id="startQuizBtn" disabled>✅ I Understand, Start Test</a>
+</div>
+<script>
+//    
+
+
+
+
+
+const liveCamera = document.getElementById("liveCamera");
+const startQuizBtn = document.getElementById("startQuizBtn");
+const cameraSection = document.getElementById("camera-section");
+
+// ✅ 1. Check quiz attempt status before anything
+async function checkQuizStatus() {
+    const token = localStorage.getItem("token");
+    if (!token) {
+        await Swal.fire({
+            icon: 'error',
+            title: 'Not Logged In',
+            text: 'You must log in before starting the quiz.',
+            confirmButtonText: 'OK',
+            allowOutsideClick: false
+        });
+        window.location.href = "login.html";
+        return false;
+    }
+
+    try {
+        const res = await fetch("/api/quiz/status", {
+            method: "GET",
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+
+        if (res.status === 403) {
+            const data = await res.json();
+            await Swal.fire({
+                icon: 'error',
+                title: 'Quiz Already Attempted',
+                text: data.message || 'You cannot attempt this quiz again.',
+                confirmButtonText: 'OK',
+                allowOutsideClick: false
+            });
+            window.location.href = "index.html";
+            return false;
+        }
+        return true;
+    } catch (err) {
+        console.error("Status check failed:", err);
+        await Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Could not verify quiz status. Please try again later.',
+            confirmButtonText: 'OK'
+        });
+        return false;
+    }
+}
+
+// ✅ Initialize Camera
+async function initCamera() {
+    try {
+        console.log("Requesting camera access...");
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+
+        if (!liveCamera) {
+            console.error("❌ No video element with id=liveCamera found.");
+            return;
+        }
+
+        liveCamera.srcObject = stream;
+
+        startQuizBtn.disabled = false;
+        startQuizBtn.classList.add("enabled");
+        startQuizBtn.textContent = "✅ I Understand, Start Test";
+
+        console.log("✅ Camera started successfully.");
+    } catch (err) {
+        // console.error("❌ Camera error:", err);
+        console.error("Camera error:", err.name, err.message);
+        await Swal.fire({
+            icon: 'error',
+            title: 'Camera Access Required',
+            text: 'You must allow camera access to take this quiz.',
+            confirmButtonText: 'OK',
+            allowOutsideClick: false
+        });
+    }
+}
+
+// ✅ Init Page
+(async function initPage() {
+    const statusOk = await checkQuizStatus();
+    if (statusOk) {
+        await initCamera();
+    }
+})();
+
+// ✅ Start Quiz
+startQuizBtn.addEventListener("click", async (e) => {
+    e.preventDefault();
+    if (startQuizBtn.disabled) return;
+
+    const token = localStorage.getItem("token");
+    try {
+        const res = await fetch("/api/quiz/status", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` }
+        });
+
+        if (res.status === 403) {
+            const data = await res.json();
+            await Swal.fire({
+                icon: 'error',
+                title: 'Access Denied',
+                text: data.message || 'You have already attempted this quiz.',
+                confirmButtonText: 'OK',
+                allowOutsideClick: false
+            });
+        } else {
+            window.location.href = "./quiz.html";
+        }
+    } catch (err) {
+        console.error("❌ Start quiz error:", err);
+        await Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Unable to start quiz. Please try again.',
+            confirmButtonText: 'OK'
+        });
+    }
+});
+
+</script>
+
+
+
+
+</body>
+</html>

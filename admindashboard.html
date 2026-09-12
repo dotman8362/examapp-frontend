@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - LAUTECH Final Assessment</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #5a3e2b, #8b5e3c);
+            margin: 0;
+            padding: 0;
+            color: #fff6e5;
+            animation: fadeInBody 1.2s ease-in-out;
+        }
+
+        @keyframes fadeInBody {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        header, .top-bar h2 {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ffddaa;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            animation: fadeUp 1s ease-out;
+        }
+
+        @keyframes fadeUp {
+            from { transform: translateY(40px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .logout-btn {
+            background: #ffcc70;
+            color: #3e2723;
+            padding: 10px 18px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #e6b85f;
+            transform: scale(1.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background: rgba(255, 204, 112, 0.2);
+            color: #ffddaa;
+            font-size: 1.1rem;
+        }
+
+        tr {
+            background: rgba(255, 255, 255, 0.05);
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        tr:hover {
+            background: rgba(255, 204, 112, 0.15);
+            transform: scale(1.01);
+        }
+
+        td {
+            color: #fff6e5;
+        }
+
+        /* Spinner Overlay */
+        #spinner {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 9999;
+        }
+
+        .loader {
+            border: 6px solid rgba(255, 255, 255, 0.3);
+            border-top: 6px solid #ffcc70;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        #downloadPDF {
+    background: linear-gradient(135deg, #5a3e2b, hsl(30, 67%, 48%));
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+#downloadPDF:hover {
+    background: linear-gradient(135deg, #66BB6A, #388E3C);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+}
+
+#downloadPDF:active {
+    transform: scale(0.98);
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="top-bar">
+            <h2>Student Quiz Results</h2>
+            <a href="index.html" class="logout-btn" onclick="logout()">Logout</a>
+        </div>
+        <table id="resultsTable">
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Username</th>
+                    <th>Score</th>
+                    <th>Submitted At</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <button id="downloadPDF">📄 Download Result as PDF</button>
+
+    <div id="spinner">
+        <div class="loader"></div>
+    </div>
+
+    <script>
+
+
+
+document.getElementById("downloadPDF").addEventListener("click", () => {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    doc.setFontSize(18);
+    doc.text("IT Student Quiz Results(2024/2025)", 105, 15, { align: "center" });
+
+    // Get table rows
+    const rows = [];
+    const headers = [];
+    document.querySelectorAll("#resultsTable thead th").forEach(th => headers.push(th.innerText));
+    rows.push(headers);
+
+    document.querySelectorAll("#resultsTable tbody tr").forEach(tr => {
+        const row = [];
+        tr.querySelectorAll("td").forEach(td => row.push(td.innerText));
+        rows.push(row);
+    });
+
+    // Use autoTable plugin
+    doc.autoTable({
+        head: [headers],
+        body: rows.slice(1),
+        startY: 25,
+    });
+
+    doc.save(`quiz_results_${new Date().toISOString().split("T")[0]}.pdf`);
+});
+
+        const spinner = document.getElementById('spinner');
+
+        async function loadResults() {
+            try {
+                spinner.style.display = "flex";
+                const token = localStorage.getItem("adminToken");
+                if (!token) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Unauthorized',
+                        text: 'Please log in as admin.',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        window.location.href = "adminlogin.html";
+                    });
+                    return;
+                }
+
+                const res = await fetch("/api/admin/results", {
+                    headers: { "Authorization": "Bearer " + token }
+                });
+
+                spinner.style.display = "none";
+
+                if (!res.ok) throw new Error("Failed to fetch results");
+
+                const results = await res.json();
+                const tableBody = document.querySelector("#resultsTable tbody");
+                tableBody.innerHTML = results.map(r => `
+                    <tr>
+                        <td>${r.student?.fullName || "N/A"}</td>
+                        <td>${r.student?.username || "N/A"}</td>
+                        <td>${r.score}</td>
+                        <td>${new Date(r.submittedAt).toLocaleString()}</td>
+                    </tr>
+                `).join("");
+            } catch (error) {
+                spinner.style.display = "none";
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error loading results.',
+                    confirmButtonText: 'OK'
+                });
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem("adminToken");
+        }
+
+        loadResults();
+    </script>
+</body>
+</html>

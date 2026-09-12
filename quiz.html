@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Quiz - LAUTECH Final Assessment</title>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
+<style>
+   body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #5a3e2b, #8b5e3c);
+    margin: 0;
+    padding: 0;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+      user-select: none;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE/Edge */
+}
+
+
+.container {
+    background: rgba(255, 255, 255, 0.08);
+    padding: 30px;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+#timer {
+    text-align: left;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #ffcc70;
+    margin-bottom: 30px;
+}
+
+h1 {
+    text-align: center;
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+    color: #ffddaa;
+    letter-spacing: 1px;
+}
+
+.question {
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #fff6e5;
+}
+
+.options label {
+    display: block;
+    margin: 8px 0;
+    padding: 10px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.options label:hover {
+    background: rgba(255, 204, 112, 0.2);
+    transform: translateY(-2px);
+}
+
+.btn-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+button {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#prevBtn {
+    background: #d4a373;
+    color: #3e2723;
+}
+#prevBtn:hover {
+    background: #c58e5c;
+}
+
+#nextBtn {
+    background: #ffcc70;
+    color: #3e2723;
+}
+#nextBtn:hover {
+    background: #e6b85f;
+}
+
+#submitBtn {
+    background: #4e342e;
+    color: #ffddaa;
+}
+#submitBtn:hover {
+    background: #3e2723;
+}
+
+/* Camera container */
+#camera-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid #ccc;
+    padding: 10px;
+    border-radius: 8px;
+    z-index: 1000;
+}
+
+#liveCamera {
+    width: 200px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+ .question-info {
+    font-size: 20px;
+    color: #4e342e;
+ }
+
+ .question-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 20px 0;
+}
+
+.q-btn {
+    width: 40px;
+    height: 40px;
+    border-radius:20%;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.q-btn:hover {
+    transform: scale(1.1);
+    background-color: #C37E34;
+    color: #fff;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    body {
+        align-items: stretch;
+        padding: 10px;
+    }
+
+    .container {
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 1.4rem;
+    }
+
+    #camera-container {
+        position: static;
+        max-width: 100%;
+        margin: 0 auto 20px auto;
+        text-align: center;
+    }
+
+    #liveCamera {
+        width: 100%;
+        height: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.2rem;
+    }
+
+    button {
+        font-size: 0.9rem;
+        padding: 8px;
+    }
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <!-- Live Camera Feed -->
+<div id="camera-container">
+    <h3>Live Camera Feed</h3>
+   <!-- Add this in your quiz page -->
+<video id="liveCamera" autoplay playsinline width="200" height="150" style="border:2px solid #4e54c8; border-radius:8px;"></video>
+<canvas id="cameraCanvas" width="250" height="180" style="display:none;"></canvas>
+
+</div>
+
+    <div id="timer">Time Left: 25:00</div>
+    <img src="./LSEI LOGO.png" width="200px" height="200px" style="margin-left: 150px;" alt="">
+    <h1>LAUTECH Software Institute <br><br><br> IT Student Test</h1>
+    <div id="quiz">
+        <div class="question-info" id="questionInfo"></div>
+        <div class="question" id="question">Question text will appear here...</div>
+        <div class="options" id="options">
+            <!-- Options will be dynamically inserted -->
+        </div>
+
+
+    </div>
+
+      <div class="question-buttons" id="questionButtons"></div>
+    <div class="btn-group">
+        <button id="prevBtn" onclick="prevQuestion()">Previous</button>
+        <button id="nextBtn" onclick="nextQuestion()">Next</button>
+        <button id="submitBtn" onclick="submitQuiz()" style="display:none;">Submit</button>
+    </div>
+</div>
+
+
+
+<script>
+
+    
+
+
+// Disable right-click
+ document.addEventListener('contextmenu', event => event.preventDefault());
+
+// Disable specific keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+    // Disable Ctrl+C, Ctrl+X, Ctrl+V, Ctrl+U, Ctrl+S, Ctrl+Shift+I
+    if (
+        (e.ctrlKey && ['c', 'x', 'v', 'u', 's'].includes(e.key.toLowerCase())) ||
+        (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'i') ||
+        (e.key === 'F12')
+    ) {
+        e.preventDefault();
+        alert("Copying and developer tools are disabled during the quiz.");
+    }
+});
+let questions = [];
+let currentQuestionIndex = 0;
+let answers = {};
+
+// 
+
+startCamera()
+
+// async function loadQuiz() {
+//     // startCamera()
+//   try {
+//     const token = localStorage.getItem("token"); // or however you store it
+//     const res = await fetch("/api/quiz/questions", {
+//       headers: { Authorization: `Bearer ${token}` },
+//     });
+
+//     console.log("Raw response:", res);
+
+//     if (!res.ok) {
+//       const errText = await res.text();
+//       console.error("Fetch failed:", res.status, errText);
+//       throw new Error(`HTTP ${res.status}`);
+//     }
+
+//     const data = await res.json();
+//     console.log("Quiz data:", data);
+//     questions = data.questions || data; // depends on backend
+//     showQuestion(0);
+
+//   } catch (err) {
+//     console.error("🔥 Error loading quiz:", err);
+//   }
+// }
+
+loadQuiz();
+// createQuestionButtons();
+
+// let questions = [];
+// let answers = {};
+// let currentQuestionIndex = 0;
+
+async function loadQuiz() {
+  startCamera(); // camera check
+  try {
+    const token = localStorage.getItem("token");
+    const res = await fetch("/api/quiz/questions", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(`Fetch failed: ${res.status} ${errText}`);
+    }
+
+    const data = await res.json();
+    questions = data.questions || data;
+
+    if (!questions.length) {
+      document.getElementById("quizContainer").innerHTML =
+        "<p>No questions available</p>";
+      return;
+    }
+
+    // 🔥 integrate
+    createQuestionButtons();
+    showQuestion(0);
+
+  } catch (err) {
+    console.error("🔥 Error loading quiz:", err);
+  }
+}
+
+// create buttons
+function createQuestionButtons() {
+  const container = document.getElementById("questionButtons");
+  container.innerHTML = "";
+  questions.forEach((q, index) => {
+    const btn = document.createElement("button");
+    btn.textContent = index + 1;
+    btn.classList.add("q-btn");
+    btn.onclick = () => showQuestion(index);
+    container.appendChild(btn);
+  });
+}
+
+// show question logic
+function showQuestion(index = currentQuestionIndex) {
+  currentQuestionIndex = index;
+  const questionEl = document.getElementById("question");
+  const optionsEl = document.getElementById("options");
+  const questionInfoEl = document.getElementById("questionInfo");
+
+  const q = questions[currentQuestionIndex];
+  questionInfoEl.textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+  questionEl.textContent = q.question;
+
+  optionsEl.innerHTML = "";
+
+  if (q.options && q.options.length > 0) {
+    q.options.forEach(option => {
+      const safeOption = option.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      const checked = answers[`q${currentQuestionIndex}`] === option ? "checked" : "";
+      optionsEl.innerHTML += `
+        <label>
+          <input type="radio" name="option" value="${option}" ${checked}
+          onchange="selectOption('${option}')"> ${safeOption}
+        </label><br>
+      `;
+    });
+  } else {
+    const saved = answers[`q${currentQuestionIndex}`] || "";
+    optionsEl.innerHTML = `
+      <textarea id="typedAnswer" rows="5" style="width:100%; padding:10px; font-size:16px;"
+      placeholder="Type your answer here..." oninput="selectOption(this.value)">${saved}</textarea>
+    `;
+  }
+
+  highlightCurrentButton();
+  document.getElementById("prevBtn").style.display = currentQuestionIndex === 0 ? "none" : "inline-block";
+  document.getElementById("nextBtn").style.display = currentQuestionIndex === questions.length - 1 ? "none" : "inline-block";
+  document.getElementById("submitBtn").style.display = currentQuestionIndex === questions.length - 1 ? "inline-block" : "none";
+}
+
+function selectOption(option) {
+  answers[`q${currentQuestionIndex}`] = option;
+}
+
+// highlight
+function highlightCurrentButton() {
+  const btns = document.querySelectorAll(".q-btn");
+  btns.forEach((btn, i) => {
+    if (i === currentQuestionIndex) {
+      btn.style.backgroundColor = "#c37e34";
+      btn.style.color = "#fff";
+    } else if (answers[`q${i}`]) {
+      btn.style.backgroundColor = "#4CAF50";
+      btn.style.color = "#fff";
+    } else {
+      btn.style.backgroundColor = "#fff";
+      btn.style.color = "#000";
+    }
+  });
+}
+
+function nextQuestion() {
+  if (currentQuestionIndex < questions.length - 1) {
+    currentQuestionIndex++;
+    showQuestion();
+  }
+}
+function prevQuestion() {
+  if (currentQuestionIndex > 0) {
+    currentQuestionIndex--;
+    showQuestion();
+  }
+}
+
+function submitQuiz() {
+  console.log("Submitted answers:", answers);
+  // here you can send answers to backend
+}
+
+// load when page ready
+// window.onload = loadQuiz;
+
+
+function prevQuestion() {
+    if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        showQuestion();
+    }
+}
+
+async function submitQuiz() {
+    try {
+        const token = localStorage.getItem("token");
+        const res = await fetch("/api/quiz/submit", {
+            method: "POST",
+            headers: { 
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            },
+            body: JSON.stringify({ answers })
+        });
+
+        if (res.ok) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Quiz Submitted!',
+                text: 'Your quiz was submitted successfully.',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                window.location.href = "index.html";
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Submission Failed',
+                text: 'Error submitting quiz. Please try again.',
+                confirmButtonText: 'OK'
+            });
+        }
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Something went wrong while submitting your quiz.',
+            confirmButtonText: 'OK'
+        });
+    }
+}
+
+
+// loadQuestions();
+
+
+
+// Set time (in seconds) — 50 minutes = 3000 seconds
+let timeLeft = 25 * 60;
+
+function startTimer() {
+    const timerDisplay = document.getElementById("timer");
+
+    const timerInterval = setInterval(() => {
+        let minutes = Math.floor(timeLeft / 60);
+        let seconds = timeLeft % 60;
+
+        // Add leading zero if needed
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        timerDisplay.textContent = `Time Left: ${minutes}:${seconds}`;
+
+        // When timer runs out
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            alert("⏰ Time is up! Your quiz will be submitted.");
+            submitQuiz(); // call your quiz submission function
+        }
+
+        timeLeft--;
+    }, 1000);
+}
+
+// Call this when quiz starts
+startTimer();
+
+
+
+
+
+let cameraStream;
+let cameraCheckInterval;
+let cameraAlertShown = false; // Prevent repeated alerts
+
+// Start camera when quiz begins
+async function startCamera() {
+    try {
+        cameraStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        document.getElementById('liveCamera').srcObject = cameraStream;
+
+        // Check every second if camera is still running
+        cameraCheckInterval = setInterval(() => {
+            if (!isCameraOn() && !cameraAlertShown) {
+                cameraAlertShown = true; // Prevent multiple alerts
+                clearInterval(cameraCheckInterval); // Stop checking
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Camera Feed Lost',
+                    text: 'Your camera was turned off. The quiz will now be auto-submitted.',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    submitQuiz();
+                });
+            }
+        }, 1000);
+
+    } catch (error) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Camera Access Required',
+            text: 'You must allow camera access to take the quiz.',
+            confirmButtonText: 'OK'
+        }).then(() => {
+            submitQuiz(); // Auto submit if no camera permission
+        });
+    }
+}
+
+// Check if camera is still on
+function isCameraOn() {
+    return cameraStream && cameraStream.getVideoTracks().some(track => track.readyState === "live");
+}
+
+// Stop camera after quiz ends
+function stopCamera() {
+    if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+    }
+    clearInterval(cameraCheckInterval);
+}
+
+// let cameraStream;
+// let cameraCheckInterval;
+// let faceCheckInterval;
+// let cameraAlertShown = false;
+
+// async function startCamera() {
+//     try {
+//         cameraStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+//         document.getElementById('liveCamera').srcObject = cameraStream;
+
+//         // ✅ Check if camera stays ON
+//         cameraCheckInterval = setInterval(() => {
+//             if (!isCameraOn() && !cameraAlertShown) {
+//                 cameraAlertShown = true;
+//                 clearInterval(cameraCheckInterval);
+//                 clearInterval(faceCheckInterval);
+//                 Swal.fire({
+//                     icon: 'error',
+//                     title: 'Camera Feed Lost',
+//                     text: 'Your camera was turned off. The quiz will now be auto-submitted.',
+//                 }).then(() => submitQuiz());
+//             }
+//         }, 1000);
+
+//         // ✅ Face detection every 2 seconds
+//         if ('FaceDetector' in window) {
+//             const faceDetector = new FaceDetector({ fastMode: true });
+//             const video = document.getElementById('liveCamera');
+//             const canvas = document.getElementById('cameraCanvas');
+//             const ctx = canvas.getContext('2d');
+
+//             faceCheckInterval = setInterval(async () => {
+//                 try {
+//                     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+//                     const faces = await faceDetector.detect(canvas);
+
+//                     if (faces.length === 0 && !cameraAlertShown) {
+//                         cameraAlertShown = true;
+//                         clearInterval(cameraCheckInterval);
+//                         clearInterval(faceCheckInterval);
+//                         Swal.fire({
+//                             icon: 'warning',
+//                             title: 'Face Not Detected',
+//                             text: 'Your face is not visible. The quiz will now be auto-submitted.',
+//                         }).then(() => submitQuiz());
+//                     }
+//                 } catch (err) {
+//                     console.warn("Face detection error:", err);
+//                 }
+//             }, 2000);
+//         } else {
+//             console.warn("FaceDetector API not supported in this browser.");
+//         }
+
+//     } catch (error) {
+//         Swal.fire({
+//             icon: 'warning',
+//             title: 'Camera Access Required',
+//             text: 'You must allow camera access to take the quiz.',
+//         }).then(() => submitQuiz());
+//     }
+// }
+
+// function isCameraOn() {
+//     return cameraStream && cameraStream.getVideoTracks().some(track => track.readyState === "live");
+// }
+
+// function stopCamera() {
+//     if (cameraStream) cameraStream.getTracks().forEach(track => track.stop());
+//     clearInterval(cameraCheckInterval);
+//     clearInterval(faceCheckInterval);
+// }
+
+
+
+//  // Take snapshot + check face
+//   async function detectFace() {
+//     canvas.width = video.videoWidth;
+//     canvas.height = video.videoHeight;
+//     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+//     canvas.toBlob(async (blob) => {
+//       const data = new FormData();
+//       data.append("api_key", apiKey);
+//       data.append("api_secret", apiSecret);
+//       data.append("image_file", blob, "photo.jpg");
+
+//       try {
+//         const res = await fetch("https://api-us.faceplusplus.com/facepp/v3/detect", {
+//           method: "POST",
+//           body: data
+//         });
+//         const result = await res.json();
+//         console.log("Face detection result:", result);
+
+//         if (result.faces && result.faces.length > 0) {
+//           console.log("✅ Face detected");
+//         } else {
+//           alert("⚠️ No face detected! Please stay visible.");
+//         }
+//       } catch (error) {
+//         console.error("Face detection failed:", error);
+//       }
+//     }, "image/jpeg");
+//   }
+
+//   // Run face detection every 10 seconds
+// //   startCamera();
+//   setInterval(detectFace, 10000);
+</script>
+
+
+</body>
+</html>

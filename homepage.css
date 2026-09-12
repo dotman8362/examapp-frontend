@@ -1,0 +1,128 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #fff;
+    color: #333;
+}
+
+/* HEADER */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 8%;
+    background: #fff;
+    border-bottom: 1px solid #ddd;
+}
+
+header .logo {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+nav a {
+    margin-left: 20px;
+    text-decoration: none;
+    color: #333;
+}
+
+.btn {
+    background: #ff5a3c;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.btn-outline {
+    border: 1px solid #ff5a3c;
+    padding: 8px 15px;
+    border-radius: 5px;
+    color: #ff5a3c;
+}
+
+/* HERO SECTION */
+.hero {
+    text-align: center;
+    padding: 50px 20px;
+}
+
+.hero h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+}
+
+.hero p {
+    color: #777;
+    max-width: 600px;
+    margin: auto;
+}
+
+/* EXAMS SECTION */
+.exams {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin: 40px auto;
+    flex-wrap: wrap;
+}
+
+.exam-card {
+    border: 1px solid #ddd;
+    padding: 20px;
+    width: 280px;
+    border-radius: 8px;
+    background: white;
+    text-align: center;
+    transition: 0.3s;
+}
+
+.exam-card:hover {
+    border-color: #ff5a3c;
+}
+
+.exam-card h3 {
+    margin-bottom: 15px;
+}
+
+.tags span {
+    background: #eee;
+    padding: 5px 8px;
+    border-radius: 4px;
+    margin: 3px;
+    display: inline-block;
+    font-size: 0.85em;
+}
+
+/* EXPLORE LINK */
+.explore {
+    text-align: center;
+    margin-bottom: 50px;
+    color: #ff5a3c;
+    cursor: pointer;
+}
+
+/* WORKFLOW SECTION */
+.workflow {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    padding: 50px 20px;
+    background: #fafafa;
+    flex-wrap: wrap;
+}
+
+.workflow-step {
+    width: 250px;
+    text-align: center;
+}
+
+.workflow-step img {
+    height: 60px;
+    margin-bottom: 10px;
+}
