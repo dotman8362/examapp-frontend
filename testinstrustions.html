@@ -178,7 +178,7 @@ async function checkQuizStatus() {
     }
 
     try {
-        const res = await fetch("/api/quiz/status", {
+        const res = await fetch("https://examapp-backend-0b73.onrender.com/api/quiz/status", {
             method: "GET",
             headers: { "Authorization": `Bearer ${token}` }
         });
@@ -254,7 +254,7 @@ startQuizBtn.addEventListener("click", async (e) => {
 
     const token = localStorage.getItem("token");
     try {
-        const res = await fetch("/api/quiz/status", {
+        const res = await fetch("https://examapp-backend-0b73.onrender.com/api/quiz/status", {
             method: "POST",
             headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` }
         });
