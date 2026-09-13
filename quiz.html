@@ -268,7 +268,7 @@ startCamera()
 //     // startCamera()
 //   try {
 //     const token = localStorage.getItem("token"); // or however you store it
-//     const res = await fetch("/api/quiz/questions", {
+//     const res = await fetch("https://examapp-backend-0b73.onrender.com/api/quiz/questions", {
 //       headers: { Authorization: `Bearer ${token}` },
 //     });
 
@@ -301,7 +301,7 @@ async function loadQuiz() {
   startCamera(); // camera check
   try {
     const token = localStorage.getItem("token");
-    const res = await fetch("/api/quiz/questions", {
+    const res = await fetch("https://examapp-backend-0b73.onrender.com/api/quiz/questions", {
       headers: { Authorization: `Bearer ${token}` },
     });
 
@@ -432,7 +432,7 @@ function prevQuestion() {
 async function submitQuiz() {
     try {
         const token = localStorage.getItem("token");
-        const res = await fetch("/api/quiz/submit", {
+        const res = await fetch("https://examapp-backend-0b73.onrender.com/api/quiz/submit", {
             method: "POST",
             headers: { 
                 "Content-Type": "application/json",
